@@ -123,7 +123,7 @@
             opacity: 0.6;
         }
         
-        /* Vihreä tehtävälaatikko kalenteriruudussa */
+        /* Tehtävälaatikko kalenteriruudussa */
         .task-preview {
             display: block;
             font-size: 0.65rem;
@@ -195,7 +195,6 @@
             padding: 8px 16px;
             border-radius: 4px;
             cursor: pointer;
-            float: right;
             font-size: 0.9rem;
         }
         .close-btn:hover {
@@ -205,7 +204,6 @@
 </head>
 <body>
 
-    <!-- Header vasemmassa yläkulmassa -->
     <div class="header">
         <h1>Saksanperhe</h1>
         <div class="pages">
@@ -213,7 +211,6 @@
         </div>
     </div>
 
-    <!-- Keskialue kalenterille -->
     <div class="calendar-wrapper">
         <div class="calendar-container">
             <div class="calendar-header">
@@ -236,7 +233,7 @@
                         <td class="empty-day"></td>
                         <td class="empty-day"></td>
                         <td class="empty-day"></td>
-                        <td data-day="1" data-task="Kauppareissu ja siivous">1<span class="task-preview">Testi</span></td>
+                        <td data-day="1">1</td>
                         <td data-day="2">2</td>
                         <td data-day="3">3</td>
                         <td data-day="4">4</td>
@@ -261,11 +258,11 @@
                     </tr>
                     <tr>
                         <td data-day="19">19</td>
-                        <td data-day="20" data-task="Keittiö ja loppuolohuone">20<span class="task-preview">Keittiö ja loppuolohuone</span></td>
-                        <td data-day="21" data-task="Vierashuone ja sinne seinään reikä">21<span class="task-preview">Vierashuone ja sinne...</span></td>
-                        <td data-day="22" data-task="Takkahuone">22<span class="task-preview">Takkahuone</span></td>
-                        <td data-day="23" data-task="Pesuhuone, sauna">23<span class="task-preview">Pesuhuone, sauna</span></td>
-                        <td data-day="24" data-task="Siivous done">24<span class="task-preview">Siivous done</span></td>
+                        <td data-day="20">20</td>
+                        <td data-day="21">21</td>
+                        <td data-day="22">22</td>
+                        <td data-day="23">23</td>
+                        <td data-day="24">24</td>
                         <td data-day="25">25</td>
                     </tr>
                     <tr>
@@ -282,27 +279,147 @@
         </div>
     </div>
 
-    <!-- POPUP-VALIKKO (Modal) -->
     <div class="modal-overlay" id="calendarModal">
         <div class="modal-content">
             <div class="modal-header" id="modalTitle">Päivämäärä</div>
             <div class="modal-body" id="modalBody">Tehtävä tälle päivälle.</div>
-            <button class="close-btn" onclick="closeModal()">Sulje</button>
         </div>
     </div>
 
-    <!-- Footer alalaidassa -->
     <div class="footer">
         <p>&copy; 2026 Saksanperhe. Kaikki oikeudet siivottu. :D</p>
     </div>
 
 <script>
-    // Asetetaan nykyinen päivä (tänään on 18. heinäkuuta)
     const todayDayNumber = 18; 
 
-    const days = document.querySelectorAll('td[data-day]');
+    // Yhteinen tietokantatunnus. Voit vaihtaa tämän tekstin omaksesi.
+    const BUCKET_ID = "saksanperheen_tietokanta"; 
+    const API_URL = `https://kvdb.io/${BUCKET_ID}/tasks`;
+
     const modal = document.getElementById('calendarModal');
     const modalTitle = document.getElementById('modalTitle');
+    const modalBody = document.getElementById('modalBody');
+    let selectedDayElement = null;
+    let globalTaskData = {}; 
+
+    // Ladataan tehtävät netistä kaikkien nähtäville
+    async function loadTasks() {
+        try {
+            const response = await fetch(API_URL);
+            if (response.ok) {
+                globalTaskData = await response.json();
+                renderTasks(globalTaskData);
+            } else {
+                renderTasks({});
+            }
+        } catch (error) {
+            console.error("Virhe ladattaessa tietoja netistä:", error);
+            // Varasuunnitelma laitteen omaan muistiin
+            const localData = JSON.parse(localStorage.getItem('saksanperhe_tasks')) || {};
+            globalTaskData = localData;
+            renderTasks(localData);
+        }
+    }
+
+    // Piirretään tehtävät ruutuihin
+    function renderTasks(taskData) {
+        document.querySelectorAll('td[data-day]').forEach(td => {
+            const day = td.getAttribute('data-day');
+            
+            const oldPreview = td.querySelector('.task-preview');
+            if (oldPreview) oldPreview.remove();
+
+            if (taskData[day]) {
+                td.setAttribute('data-task', taskData[day].text);
+                td.setAttribute('data-done', taskData[day].done);
+
+                const span = document.createElement('span');
+                span.className = 'task-preview';
+                span.innerText = taskData[day].text;
+                
+                if (taskData[day].done === "true" || taskData[day].done === true) {
+                    span.style.backgroundColor = "#6c757d"; // Harmaa jos tehty
+                    span.style.textDecoration = "line-through";
+                } else {
+                    span.style.backgroundColor = "#28a745"; // Vihreä jos tekemättä
+                }
+                td.appendChild(span);
+            } else {
+                td.removeAttribute('data-task');
+                td.removeAttribute('data-done');
+            }
+        });
+    }
+
+    // Tallennetaan muutokset yhteiseen tietokantaan
+    async function saveTask(day, text, done) {
+        if (text === null || text.trim() === "") {
+            delete globalTaskData[day];
+        } else {
+            globalTaskData[day] = { text: text, done: done };
+        }
+        
+        renderTasks(globalTaskData);
+        localStorage.setItem('saksanperhe_tasks', JSON.stringify(globalTaskData));
+
+        try {
+            await fetch(API_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(globalTaskData)
+            });
+        } catch (e) {
+            console.error("Ei saatu yhteyttä nettitietokantaan:", e);
+        }
+    }
+
+    // Klikkauksen käsittely kalenterissa
+    document.querySelectorAll('td[data-day]').forEach(td => {
+        td.addEventListener('click', function() {
+            selectedDayElement = this;
+            const day = this.getAttribute('data-day');
+            const currentTask = this.getAttribute('data-task') || "";
+            const isDone = this.getAttribute('data-done') === "true";
+
+            modalTitle.innerText = `Päivä ${day}. Heinäkuuta`;
+            
+            modalBody.innerHTML = `
+                <label>Tehtävä:</label><br>
+                <input type="text" id="taskInput" value="${currentTask}" style="width:100%; padding:5px; margin: 5px 0 15px 0; box-sizing:border-box;"><br>
+                
+                ${currentTask ? `
+                    <label>
+                        <input type="checkbox" id="doneCheckbox" ${isDone ? 'checked' : ''}> Merkitse tehdyksi
+                    </label>
+                ` : ''}
+                
+                <div style="margin-top: 20px; display:flex; justify-content:space-between;">
+                    <button class="close-btn" style="background:#28a745;" onclick="submitModalData()">Tallenna</button>
+                    <button class="close-btn" style="background:#dc3545;" onclick="closeModal()">Peruuta</button>
+                </div>
+            `;
+            
+            modal.style.display = 'flex';
+        });
+    });
+
+    function submitModalData() {
+        if (!selectedDayElement) return;
+        const day = selectedDayElement.getAttribute('data-day');
+        const text = document.getElementById('taskInput').value;
+        const doneCheckbox = document.getElementById('doneCheckbox');
+        const done = doneCheckbox ? doneCheckbox.checked : false;
+
+        saveTask(day, text, done);
+        closeModal();
+    }
+
+    function closeModal() {
+        modal.style.display = 'none';
+    }
+
+    window.onload = loadTasks;
 </script>
 </body>
 </html>
