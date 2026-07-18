@@ -264,10 +264,15 @@
     </div>
 
 <script>
-    // Tämä osoite käyttää valmista julkista testilaatikkoa, joka toimii suoraan ilman rekisteröitymisiä.
-    // Kaikki jotka avaavat tämän saman koodin, näkevät ja muokkaavat samaa listaa.
-    const API_URL = "https://api.jsonbin.io/v3/b/66996bfbacd3cb34a8684bb7";
-    const MASTER_KEY = "$2a$10$W2iE6h8M2j7bHhR.1a1XEuPz4aXG2x4CjLqYmY6uD9b7K3z3z3z3z"; // Julkinen luku/kirjoitusavain testiin
+    // Asetetaan nykyinen päivä
+    const todayDayNumber = 18; 
+
+    /* TÄRKEÄÄ: Vaihda alla olevaan osoitteeseen "saksanperhe2026" tilalle jokin oma 
+       täysin uniikki sana tai numerosarja (esim. saksanperhe_67392a). 
+       Tämä luo teille oman täysin uuden ja puhtaan tietokantalaatikon nettiin!
+    */
+    const UNIQUE_ID = "saksanperhe2026";
+    const API_URL = `https://api.myjson.online/v1/records/${UNIQUE_ID}`;
 
     const modal = document.getElementById('calendarModal');
     const modalTitle = document.getElementById('modalTitle');
@@ -275,30 +280,32 @@
     let selectedDayElement = null;
     let globalTaskData = {}; 
 
+    // Ladataan tiedot netistä kaikkien laitteille
     async function loadTasks() {
-        // Ladataan varalta ensin laitteen oma muisti
+        // Ladataan heti laitteen oma muisti valmiiksi näkyviin
         const localData = JSON.parse(localStorage.getItem('saksanperhe_tasks')) || {};
         globalTaskData = localData;
         renderTasks(globalTaskData);
 
         try {
-            const response = await fetch(API_URL, {
-                method: 'GET',
-                headers: { 'X-Master-Key': MASTER_KEY }
-            });
+            const response = await fetch(API_URL);
             if (response.ok) {
                 const resData = await response.json();
-                if (resData.record) {
-                    globalTaskData = resData.record;
+                if (resData && resData.data) {
+                    globalTaskData = resData.data;
                     localStorage.setItem('saksanperhe_tasks', JSON.stringify(globalTaskData));
                     renderTasks(globalTaskData);
                 }
+            } else if (response.status === 404) {
+                // Jos tietokantaa ei ole vielä olemassa palvelimella, luodaan se ensimmäisellä tallennuksella
+                console.log("Tietokantalaatikko alustetaan ensimmäisellä tallennuksella.");
             }
         } catch (error) {
             console.error("Virhe ladattaessa yhteisiä tietoja netistä:", error);
         }
     }
 
+    // Piirretään tehtävät kalenteriruutuihin
     function renderTasks(taskData) {
         document.querySelectorAll('td[data-day]').forEach(td => {
             const day = td.getAttribute('data-day');
@@ -328,6 +335,7 @@
         });
     }
 
+    // Tallennetaan muutos ja lähetetään se nettiin muille
     async function saveTask(day, text, done) {
         if (text === null || text.trim() === "") {
             delete globalTaskData[day];
@@ -339,19 +347,20 @@
         localStorage.setItem('saksanperhe_tasks', JSON.stringify(globalTaskData));
 
         try {
+            // Käytetään POST-metodia, joka luo tai ylikirjoittaa tiedot lennosta
             await fetch(API_URL, {
-                method: 'PUT',
+                method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json',
-                    'X-Master-Key': MASTER_KEY
+                    'Content-Type': 'application/json'
                 },
-                body: JSON.stringify(globalTaskData)
+                body: JSON.stringify({ data: globalTaskData })
             });
         } catch (e) {
             console.error("Nettiin tallennus epäonnistui:", e);
         }
     }
 
+    // Kalenteriruudun klikkaaminen
     document.querySelectorAll('td[data-day]').forEach(td => {
         td.addEventListener('click', function() {
             selectedDayElement = this;
