@@ -293,8 +293,9 @@
 <script>
     const todayDayNumber = 18; 
 
-    // Yhteinen tietokantatunnus. Voit vaihtaa tämän tekstin omaksesi.
-    const BUCKET_ID = "saksanperheen_tietokanta"; 
+    // Vaihda tähän jokin täysin oma teksti (esim. saksanperhe_ja_salasana_123),
+    // jotta tietokanta on juuri teidän perheen käytössä.
+    const BUCKET_ID = "saksanperhe_kalenteri_2026"; 
     const API_URL = `https://kvdb.io/${BUCKET_ID}/tasks`;
 
     const modal = document.getElementById('calendarModal');
@@ -303,26 +304,29 @@
     let selectedDayElement = null;
     let globalTaskData = {}; 
 
-    // Ladataan tehtävät netistä kaikkien nähtäville
+    // Ladataan ensin laitteen oma muisti, ja yritetään sitten päivittää netistä
     async function loadTasks() {
+        // Latataan heti paikallinen muisti, jotta tiedot eivät vilku tyhjänä
+        const localData = JSON.parse(localStorage.getItem('saksanperhe_tasks')) || {};
+        globalTaskData = localData;
+        renderTasks(globalTaskData);
+
         try {
             const response = await fetch(API_URL);
             if (response.ok) {
-                globalTaskData = await response.json();
-                renderTasks(globalTaskData);
-            } else {
-                renderTasks({});
+                const serverData = await response.json();
+                // Jos palvelimella on jotain, otetaan se käyttöön ja päivitetään paikallinen muisti
+                if (serverData && typeof serverData === 'object' && Object.keys(serverData).length > 0) {
+                    globalTaskData = serverData;
+                    localStorage.setItem('saksanperhe_tasks', JSON.stringify(globalTaskData));
+                    renderTasks(globalTaskData);
+                }
             }
         } catch (error) {
-            console.error("Virhe ladattaessa tietoja netistä:", error);
-            // Varasuunnitelma laitteen omaan muistiin
-            const localData = JSON.parse(localStorage.getItem('saksanperhe_tasks')) || {};
-            globalTaskData = localData;
-            renderTasks(localData);
+            console.error("Ei saatu yhteyttä nettitietokantaan, käytetään paikallista tietoa:", error);
         }
     }
 
-    // Piirretään tehtävät ruutuihin
     function renderTasks(taskData) {
         document.querySelectorAll('td[data-day]').forEach(td => {
             const day = td.getAttribute('data-day');
@@ -339,10 +343,10 @@
                 span.innerText = taskData[day].text;
                 
                 if (taskData[day].done === "true" || taskData[day].done === true) {
-                    span.style.backgroundColor = "#6c757d"; // Harmaa jos tehty
+                    span.style.backgroundColor = "#6c757d";
                     span.style.textDecoration = "line-through";
                 } else {
-                    span.style.backgroundColor = "#28a745"; // Vihreä jos tekemättä
+                    span.style.backgroundColor = "#28a745";
                 }
                 td.appendChild(span);
             } else {
@@ -352,7 +356,6 @@
         });
     }
 
-    // Tallennetaan muutokset yhteiseen tietokantaan
     async function saveTask(day, text, done) {
         if (text === null || text.trim() === "") {
             delete globalTaskData[day];
@@ -360,21 +363,21 @@
             globalTaskData[day] = { text: text, done: done };
         }
         
+        // Tallennetaan heti omaan selaimeen
         renderTasks(globalTaskData);
         localStorage.setItem('saksanperhe_tasks', JSON.stringify(globalTaskData));
 
+        // Yritetään lähettää nettiin muille
         try {
             await fetch(API_URL, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(globalTaskData)
             });
         } catch (e) {
-            console.error("Ei saatu yhteyttä nettitietokantaan:", e);
+            console.error("Nettiin tallennus epäonnistui:", e);
         }
     }
 
-    // Klikkauksen käsittely kalenterissa
     document.querySelectorAll('td[data-day]').forEach(td => {
         td.addEventListener('click', function() {
             selectedDayElement = this;
