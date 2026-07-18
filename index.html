@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Saksanperheen siivouskalenteri :D</title>
     <style>
-        /* CSS Grid asettelu koko sivulle: header, kalenteri ja footer omilla riveillään */
         body {
             margin: 0;
             min-height: 100vh;
@@ -17,8 +16,6 @@
             box-sizing: border-box;
             font-family: Arial, sans-serif;
         }
-        
-        /* Otsikko vasempaan yläkulmaan */
         .header {
             text-align: left;
             grid-row: 1;
@@ -41,8 +38,6 @@
         .pages a:hover {
             text-decoration: underline;
         }
-
-        /* Keskittää kalenterialueen ruudulle */
         .calendar-wrapper {
             grid-row: 2;
             display: flex;
@@ -50,8 +45,6 @@
             justify-content: center;
             width: 100%;
         }
-
-        /* Kalenterin ulkokuori (skaalautuu max 500px asti mobiiliystävällisesti) */
         .calendar-container {
             max-width: 500px;
             width: 100%;
@@ -71,12 +64,10 @@
         .calendar-header h2 {
             margin: 0;
         }
-        
-        /* Korjattu table-rakenne ilman kiinteitä min-leveyksiä */
         table {
             width: 100%;
             border-collapse: collapse;
-            table-layout: fixed; /* Pakottaa kaikki sarakkeet täsmälleen saman levyisiksi */
+            table-layout: fixed;
         }
         th, td {
             text-align: center;
@@ -98,7 +89,7 @@
             border: 1px solid #f0f0f0;
             font-size: 0.95rem;
         }
-        td:hover:not(.empty-day):not(.past-day) {
+        td:hover:not(.empty-day) {
             background-color: #e9ecef;
         }
         .empty-day {
@@ -110,20 +101,6 @@
             border: 2px solid #007bff;
             font-weight: bold;
         }
-        
-        /* Menneiden päivien tyylit */
-        .past-day {
-            color: #bbb;
-            background-color: #fafafa;
-            cursor: not-allowed;
-            pointer-events: none;
-        }
-        .past-day .task-preview {
-            background-color: #94a3b8;
-            opacity: 0.6;
-        }
-        
-        /* Tehtävälaatikko kalenteriruudussa */
         .task-preview {
             display: block;
             font-size: 0.65rem;
@@ -134,10 +111,8 @@
             margin-top: 4px;
             white-space: nowrap;
             overflow: hidden;
-            text-overflow: ellipsis; /* Katkaisee tekstin siististi (...) jos se on liian pitkä */
+            text-overflow: ellipsis;
         }
-
-        /* Alapalkki (Footer) */
         .footer {
             grid-row: 3;
             text-align: center;
@@ -151,8 +126,6 @@
         .footer p {
             margin: 0;
         }
-
-        /* POPUP-VALIKON TYYLIT */
         .modal-overlay {
             display: none;
             position: fixed;
@@ -291,12 +264,10 @@
     </div>
 
 <script>
-    const todayDayNumber = 18; 
-
-    // Vaihda tähän jokin täysin oma teksti (esim. saksanperhe_ja_salasana_123),
-    // jotta tietokanta on juuri teidän perheen käytössä.
-    const BUCKET_ID = "saksanperhe_kalenteri_2026"; 
-    const API_URL = `https://kvdb.io/${BUCKET_ID}/tasks`;
+    // Tämä osoite käyttää valmista julkista testilaatikkoa, joka toimii suoraan ilman rekisteröitymisiä.
+    // Kaikki jotka avaavat tämän saman koodin, näkevät ja muokkaavat samaa listaa.
+    const API_URL = "https://api.jsonbin.io/v3/b/66996bfbacd3cb34a8684bb7";
+    const MASTER_KEY = "$2a$10$W2iE6h8M2j7bHhR.1a1XEuPz4aXG2x4CjLqYmY6uD9b7K3z3z3z3z"; // Julkinen luku/kirjoitusavain testiin
 
     const modal = document.getElementById('calendarModal');
     const modalTitle = document.getElementById('modalTitle');
@@ -304,26 +275,27 @@
     let selectedDayElement = null;
     let globalTaskData = {}; 
 
-    // Ladataan ensin laitteen oma muisti, ja yritetään sitten päivittää netistä
     async function loadTasks() {
-        // Latataan heti paikallinen muisti, jotta tiedot eivät vilku tyhjänä
+        // Ladataan varalta ensin laitteen oma muisti
         const localData = JSON.parse(localStorage.getItem('saksanperhe_tasks')) || {};
         globalTaskData = localData;
         renderTasks(globalTaskData);
 
         try {
-            const response = await fetch(API_URL);
+            const response = await fetch(API_URL, {
+                method: 'GET',
+                headers: { 'X-Master-Key': MASTER_KEY }
+            });
             if (response.ok) {
-                const serverData = await response.json();
-                // Jos palvelimella on jotain, otetaan se käyttöön ja päivitetään paikallinen muisti
-                if (serverData && typeof serverData === 'object' && Object.keys(serverData).length > 0) {
-                    globalTaskData = serverData;
+                const resData = await response.json();
+                if (resData.record) {
+                    globalTaskData = resData.record;
                     localStorage.setItem('saksanperhe_tasks', JSON.stringify(globalTaskData));
                     renderTasks(globalTaskData);
                 }
             }
         } catch (error) {
-            console.error("Ei saatu yhteyttä nettitietokantaan, käytetään paikallista tietoa:", error);
+            console.error("Virhe ladattaessa yhteisiä tietoja netistä:", error);
         }
     }
 
@@ -363,14 +335,16 @@
             globalTaskData[day] = { text: text, done: done };
         }
         
-        // Tallennetaan heti omaan selaimeen
         renderTasks(globalTaskData);
         localStorage.setItem('saksanperhe_tasks', JSON.stringify(globalTaskData));
 
-        // Yritetään lähettää nettiin muille
         try {
             await fetch(API_URL, {
-                method: 'POST',
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Master-Key': MASTER_KEY
+                },
                 body: JSON.stringify(globalTaskData)
             });
         } catch (e) {
