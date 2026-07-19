@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Saksanperhe | Etusivu</title>
+    <style>
+                body {
+            margin: 0;
+            min-height: 100vh;
+            display: grid;
+            grid-template-rows: auto 1fr auto;
+            grid-template-columns: 1fr;
+            padding: 20px;
+            background-color: #f8f9fa;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+        .header {
+            text-align: left;
+            grid-row: 1;
+            justify-self: start;
+            margin-bottom: 20px;
+        }
+        .header h1 {
+            margin: 0 0 5px 0;
+            font-size: 2rem;
+            color: #212529;
+        }
+        .pages p {
+            margin: 0;
+        }
+        .pages a {
+            color: #007bff;
+            text-decoration: none;
+            font-size: 1rem;
+        }
+        .pages a:hover {
+            text-decoration: underline;
+        }
+        .content {
+            grid-row: 2;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .ajankohtaista {
+            width: 100%;
+            max-width: 800px;
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .ajankohtaista-image {
+            width: 90%;
+            height: auto;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+                .footer {
+            grid-row: 3;
+            text-align: center;
+            padding: 15px 0 0 0;
+            font-size: 0.85rem;
+            color: #6c757d;
+            border-top: 1px solid #dee2e6;
+            width: 100%;
+            margin-top: 20px;
+        }
+        .footer p {
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Saksanperhe</h1>
+        <div class="pages">
+            <p><strong><a href="index.html">Koti</a> | <a href="calendar.html">Siivouskalenteri</a> | <a href="clicker.html">Pipsa Clicker</a></strong></p>
+        </div>
+    </div>
+    <div class="content">
+                <img src="/parempipipsa.jpg" alt="Pipsa" class="ajankohtaista-image">    
+                <h2 class="ajankohtaista-header">Pipsa on ilmoitettu tulemaan veneilemään</h2>
+                <p class="ajankohtaista-text">Pipsa on ilmoitettu tulemaan veneilemään iltapäivällä. Tästä ilmoitetaan..</p>
+                <strong class="ajankohtaista-alert">Lue koko juttu painamalla <a href="news/art-134564515572.html">tästä</a></strong>
+            </div>
+        </div>
+    <div class="footer">
+        <p>&copy; 2026 Saksanperhe. Kaikki oikeudet pidätetty. :D</p>
+    </div>
+</body>
+</html>
