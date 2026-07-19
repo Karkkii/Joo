@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Saksanperheen siivouskalenteri :D</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Saksanperheen siivouskalenteri">
+    <meta name="keywords" content="siivous, kalenteri, Saksanperhe">
+    <meta name="footer" content="(C) Dusty 2026">
+    <meta name="robots" content="index, follow">
+    <style>
+        /* CSS Grid asettelu koko sivulle: header, kalenteri ja footer omilla riveillään */
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: grid;
+            grid-template-rows: auto 1fr auto;
+            grid-template-columns: 1fr;
+            padding: 20px;
+            background-color: #f8f9fa;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+        
+        /* Otsikko vasempaan yläkulmaan */
+        .header {
+            text-align: left;
+            grid-row: 1;
+            justify-self: start;
+            margin-bottom: 20px;
+        }
+        .header h1 {
+            margin: 0 0 5px 0;
+            font-size: 2rem;
+            color: #212529;
+        }
+        .pages p {
+            margin: 0;
+        }
+        .pages a {
+            color: #007bff;
+            text-decoration: none;
+            font-size: 1rem;
+        }
+        .pages a:hover {
+            text-decoration: underline;
+        }
+
+        /* Keskittää kalenterialueen ruudulle */
+        .calendar-wrapper {
+            grid-row: 2;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+        }
+
+        /* Kalenterin ulkokuori (skaalautuu max 500px asti mobiiliystävällisesti) */
+        .calendar-container {
+            max-width: 500px;
+            width: 100%;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            background-color: white;
+        }
+        .calendar-header {
+            background-color: #007bff;
+            color: white;
+            text-align: center;
+            padding: 15px;
+            font-size: 1.2rem;
+        }
+        .calendar-header h2 {
+            margin: 0;
+        }
+        
+        /* Korjattu table-rakenne ilman kiinteitä min-leveyksiä */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            table-layout: fixed; /* Pakottaa kaikki sarakkeet täsmälleen saman levyisiksi */
+        }
+        th, td {
+            text-align: center;
+            padding: 8px 2px;
+            vertical-align: top;
+            height: 65px;
+            box-sizing: border-box;
+        }
+        th {
+            background-color: #f1f1f1;
+            color: #333;
+            font-size: 0.9rem;
+            height: auto;
+            padding: 12px 0;
+        }
+        td {
+            color: #555;
+            cursor: pointer;
+            border: 1px solid #f0f0f0;
+            font-size: 0.95rem;
+        }
+        td:hover:not(.empty-day):not(.past-day) {
+            background-color: #e9ecef;
+        }
+        .empty-day {
+            cursor: default;
+            border: none;
+        }
+        .today {
+            background-color: #e6f2ff;
+            border: 2px solid #007bff;
+            font-weight: bold;
+        }
+        
+        /* Menneiden päivien tyylit */
+        .past-day {
+            color: #bbb;
+            background-color: #fafafa;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+        .past-day .task-preview {
+            background-color: #94a3b8;
+            opacity: 0.6;
+        }
+        
+        /* Vihreä tehtävälaatikko kalenteriruudussa */
+        .task-preview {
+            display: block;
+            font-size: 0.65rem;
+            color: #fff;
+            background-color: #28a745;
+            border-radius: 3px;
+            padding: 2px;
+            margin-top: 4px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis; /* Katkaisee tekstin siististi (...) jos se on liian pitkä */
+        }
+
+        /* Alapalkki (Footer) */
+        .footer {
+            grid-row: 3;
+            text-align: center;
+            padding: 15px 0 0 0;
+            font-size: 0.85rem;
+            color: #6c757d;
+            border-top: 1px solid #dee2e6;
+            width: 100%;
+            margin-top: 20px;
+        }
+        .footer p {
+            margin: 0;
+        }
+
+        /* POPUP-VALIKON TYYLIT */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        .modal-content {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            width: 300px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            position: relative;
+            font-family: Arial, sans-serif;
+        }
+        .modal-header {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+            color: #333;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 5px;
+            font-weight: bold;
+        }
+        .modal-body {
+            font-size: 1rem;
+            color: #555;
+            margin-bottom: 20px;
+            line-height: 1.4;
+        }
+        .close-btn {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            float: right;
+            font-size: 0.9rem;
+        }
+        .close-btn:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header vasemmassa yläkulmassa -->
+    <div class="header">
+        <h1>Saksanperhe</h1>
+        <div class="pages">
+            <p><strong><a href="index.html">Koti</a> | <a href="#">Siivouskalenteri</a> | <a href="clicker.html">Pipsa Clicker</a></strong></p>
+        </div>
+    </div>
+
+    <!-- Keskialue kalenterille -->
+    <div class="calendar-wrapper">
+        <div class="calendar-container">
+            <div class="calendar-header">
+                <h2>Heinäkuu 2026</h2>
+                <strong>⚠️Tietokanta ei toiminnassa - tallentaa tehvävät vain sinulle⚠️</strong>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Su</th>
+                        <th>Ma</th>
+                        <th>Ti</th>
+                        <th>Ke</th>
+                        <th>To</th>
+                        <th>Pe</th>
+                        <th>La</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="empty-day"></td>
+                        <td class="empty-day"></td>
+                        <td class="empty-day"></td>
+                        <td data-day="1" data-task="Kauppareissu ja siivous">1<span class="task-preview">Testi</span></td>
+                        <td data-day="2">2</td>
+                        <td data-day="3">3</td>
+                        <td data-day="4">4</td>
+                    </tr>
+                    <tr>
+                        <td data-day="5">5</td>
+                        <td data-day="6">6</td>
+                        <td data-day="7">7</td>
+                        <td data-day="8">8</td>
+                        <td data-day="9">9</td>
+                        <td data-day="10">10</td>
+                        <td data-day="11">11</td>
+                    </tr>
+                    <tr>
+                        <td data-day="12">12</td>
+                        <td data-day="13">13</td>
+                        <td data-day="14">14</td>
+                        <td data-day="15">15</td>
+                        <td data-day="16">16</td>
+                        <td data-day="17">17</td>
+                        <td data-day="18" class="today">18</td>
+                    </tr>
+                    <tr>
+                        <td data-day="19">19</td>
+                        <td data-day="20" data-task="Keittiö ja loppuolohuone">20<span class="task-preview">Keittiö ja loppuolohuone</span></td>
+                        <td data-day="21" data-task="Vierashuone ja sinne seinään reikä">21<span class="task-preview">Vierashuone ja sinne...</span></td>
+                        <td data-day="22" data-task="Takkahuone">22<span class="task-preview">Takkahuone</span></td>
+                        <td data-day="23" data-task="Pesuhuone, sauna">23<span class="task-preview">Pesuhuone, sauna</span></td>
+                        <td data-day="24" data-task="Siivous done">24<span class="task-preview">Siivous done</span></td>
+                        <td data-day="25">25</td>
+                    </tr>
+                    <tr>
+                        <td data-day="26">26</td>
+                        <td data-day="27">27</td>
+                        <td data-day="28">28</td>
+                        <td data-day="29">29</td>
+                        <td data-day="30">30</td>
+                        <td data-day="31">31</td>
+                        <td class="empty-day"></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- POPUP-VALIKKO (Modal) -->
+    <div class="modal-overlay" id="calendarModal">
+        <div class="modal-content">
+            <div class="modal-header" id="modalTitle">Päivämäärä</div>
+            <div class="modal-body" id="modalBody">Tehtävä tälle päivälle.</div>
+            <button class="close-btn" onclick="closeModal()">Sulje</button>
+        </div>
+    </div>
+
+    <!-- Footer alalaidassa -->
+    <div class="footer">
+        <p>&copy; 2026 Saksanperhe. Kaikki oikeudet siivottu. :D</p>
+        <strong>⚠️Tietokanta ei toiminnassa - tallentaa tehvävät vain sinulle⚠️</strong>
+        <a href="Calendar2026.html">Testikalenteri - Ei toimi!</a>
+    </div>
+
+<script>
+    // Asetetaan nykyinen päivä (tänään on 18. heinäkuuta)
+    const todayDayNumber = 18; 
+
+    const days = document.querySelectorAll('td[data-day]');
+    const modal = document.getElementById('calendarModal');
+    const modalTitle = document.getElementById('modalTitle');
+</script>
+</body>
+</html>

@@ -3,9 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Saksanperheen siivouskalenteri :D</title>
+    <title>Saksanperhe | Etusivu</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Saksanperhe | Etusivu">
+    <meta name="keywords" content="Saksanperhe, etusivu, siivouskalenteri, pipsa clicker">
+    <meta name="footer" content="(C) Dusty 2026">
+    <meta name="robots" content="index, follow">
     <style>
-        body {
+                body {
             margin: 0;
             min-height: 100vh;
             display: grid;
@@ -38,82 +44,27 @@
         .pages a:hover {
             text-decoration: underline;
         }
-        .calendar-wrapper {
+        .content {
             grid-row: 2;
             display: flex;
+            flex-direction: column;
             align-items: center;
-            justify-content: center;
-            width: 100%;
         }
-        .calendar-container {
-            max-width: 500px;
+        .ajankohtaista {
             width: 100%;
-            border: 1px solid #ccc;
+            max-width: 800px;
+            background-color: #ffffff;
+            padding: 20px;
             border-radius: 8px;
-            overflow: hidden;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-            background-color: white;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
-        .calendar-header {
-            background-color: #007bff;
-            color: white;
-            text-align: center;
-            padding: 15px;
-            font-size: 1.2rem;
-        }
-        .calendar-header h2 {
-            margin: 0;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            table-layout: fixed;
-        }
-        th, td {
-            text-align: center;
-            padding: 8px 2px;
-            vertical-align: top;
-            height: 65px;
-            box-sizing: border-box;
-        }
-        th {
-            background-color: #f1f1f1;
-            color: #333;
-            font-size: 0.9rem;
+        .ajankohtaista-image {
+            width: 90%;
             height: auto;
-            padding: 12px 0;
+            border-radius: 8px;
+            margin-bottom: 15px;
         }
-        td {
-            color: #555;
-            cursor: pointer;
-            border: 1px solid #f0f0f0;
-            font-size: 0.95rem;
-        }
-        td:hover:not(.empty-day) {
-            background-color: #e9ecef;
-        }
-        .empty-day {
-            cursor: default;
-            border: none;
-        }
-        .today {
-            background-color: #e6f2ff;
-            border: 2px solid #007bff;
-            font-weight: bold;
-        }
-        .task-preview {
-            display: block;
-            font-size: 0.65rem;
-            color: #fff;
-            background-color: #28a745;
-            border-radius: 3px;
-            padding: 2px;
-            margin-top: 4px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-        .footer {
+                .footer {
             grid-row: 3;
             text-align: center;
             padding: 15px 0 0 0;
@@ -126,286 +77,28 @@
         .footer p {
             margin: 0;
         }
-        .modal-overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-        }
-        .modal-content {
-            background-color: white;
-            padding: 20px;
-            border-radius: 8px;
-            width: 300px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-            position: relative;
-            font-family: Arial, sans-serif;
-        }
-        .modal-header {
-            font-size: 1.2rem;
-            margin-bottom: 10px;
-            color: #333;
-            border-bottom: 1px solid #eee;
-            padding-bottom: 5px;
-            font-weight: bold;
-        }
-        .modal-body {
-            font-size: 1rem;
-            color: #555;
-            margin-bottom: 20px;
-            line-height: 1.4;
-        }
-        .close-btn {
-            background-color: #007bff;
-            color: white;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 0.9rem;
-        }
-        .close-btn:hover {
-            background-color: #0056b3;
-        }
     </style>
 </head>
 <body>
-
     <div class="header">
         <h1>Saksanperhe</h1>
         <div class="pages">
-            <p><strong><a href="#">Siivouskalenteri</a> | <a href="#">Muita tulossa pian!</a></strong></p>
+            <p><strong><a href="index.html">Koti</a> | <a href="calendar.html">Siivouskalenteri</a> | <a href="clicker.html">Pipsa Clicker</a></strong></p>
         </div>
     </div>
-
-    <div class="calendar-wrapper">
-        <div class="calendar-container">
-            <div class="calendar-header">
-                <h2>Heinäkuu 2026</h2>
+    <div class="content">
+        <div class="ajankohtaista">
+            <h1 class="ajankohtaista_h1">Ajankohtaista</h1>
+            <div class="ajankohtaista-news">
+                <img src="parempipipsa.jpg" alt="Pipsa" class="ajankohtaista-image">    
+                <h2 class="ajankohtaista-header">Pipsa on ilmoitettu tulemaan veneilemään</h2>
+                <p class="ajankohtaista-text">Pipsa on ilmoitettu tulemaan veneilemään iltapäivällä. Tästä ilmoitetaan..</p>
+                <strong class="ajankohtaista-alert">Lue koko juttu painamalla <a href="news/art-134564515572.html">tästä</a></strong>
             </div>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Su</th>
-                        <th>Ma</th>
-                        <th>Ti</th>
-                        <th>Ke</th>
-                        <th>To</th>
-                        <th>Pe</th>
-                        <th>La</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td class="empty-day"></td>
-                        <td class="empty-day"></td>
-                        <td class="empty-day"></td>
-                        <td data-day="1">1</td>
-                        <td data-day="2">2</td>
-                        <td data-day="3">3</td>
-                        <td data-day="4">4</td>
-                    </tr>
-                    <tr>
-                        <td data-day="5">5</td>
-                        <td data-day="6">6</td>
-                        <td data-day="7">7</td>
-                        <td data-day="8">8</td>
-                        <td data-day="9">9</td>
-                        <td data-day="10">10</td>
-                        <td data-day="11">11</td>
-                    </tr>
-                    <tr>
-                        <td data-day="12">12</td>
-                        <td data-day="13">13</td>
-                        <td data-day="14">14</td>
-                        <td data-day="15">15</td>
-                        <td data-day="16">16</td>
-                        <td data-day="17">17</td>
-                        <td data-day="18" class="today">18</td>
-                    </tr>
-                    <tr>
-                        <td data-day="19">19</td>
-                        <td data-day="20">20</td>
-                        <td data-day="21">21</td>
-                        <td data-day="22">22</td>
-                        <td data-day="23">23</td>
-                        <td data-day="24">24</td>
-                        <td data-day="25">25</td>
-                    </tr>
-                    <tr>
-                        <td data-day="26">26</td>
-                        <td data-day="27">27</td>
-                        <td data-day="28">28</td>
-                        <td data-day="29">29</td>
-                        <td data-day="30">30</td>
-                        <td data-day="31">31</td>
-                        <td class="empty-day"></td>
-                    </tr>
-                </tbody>
-            </table>
         </div>
     </div>
-
-    <div class="modal-overlay" id="calendarModal">
-        <div class="modal-content">
-            <div class="modal-header" id="modalTitle">Päivämäärä</div>
-            <div class="modal-body" id="modalBody">Tehtävä tälle päivälle.</div>
-        </div>
-    </div>
-
     <div class="footer">
-        <p>&copy; 2026 Saksanperhe. Kaikki oikeudet siivottu. :D</p>
+        <p>&copy; 2026 Saksanperhe. Kaikki oikeudet pidätetty. :D</p>
     </div>
-
-<script>
-    // Asetetaan nykyinen päivä
-    const todayDayNumber = 18; 
-
-    /* TÄRKEÄÄ: Vaihda alla olevaan osoitteeseen "saksanperhe2026" tilalle jokin oma 
-       täysin uniikki sana tai numerosarja (esim. saksanperhe_67392a). 
-       Tämä luo teille oman täysin uuden ja puhtaan tietokantalaatikon nettiin!
-    */
-    const UNIQUE_ID = "saksanperhe2026";
-    const API_URL = `https://api.myjson.online/v1/records/${UNIQUE_ID}`;
-
-    const modal = document.getElementById('calendarModal');
-    const modalTitle = document.getElementById('modalTitle');
-    const modalBody = document.getElementById('modalBody');
-    let selectedDayElement = null;
-    let globalTaskData = {}; 
-
-    // Ladataan tiedot netistä kaikkien laitteille
-    async function loadTasks() {
-        // Ladataan heti laitteen oma muisti valmiiksi näkyviin
-        const localData = JSON.parse(localStorage.getItem('saksanperhe_tasks')) || {};
-        globalTaskData = localData;
-        renderTasks(globalTaskData);
-
-        try {
-            const response = await fetch(API_URL);
-            if (response.ok) {
-                const resData = await response.json();
-                if (resData && resData.data) {
-                    globalTaskData = resData.data;
-                    localStorage.setItem('saksanperhe_tasks', JSON.stringify(globalTaskData));
-                    renderTasks(globalTaskData);
-                }
-            } else if (response.status === 404) {
-                // Jos tietokantaa ei ole vielä olemassa palvelimella, luodaan se ensimmäisellä tallennuksella
-                console.log("Tietokantalaatikko alustetaan ensimmäisellä tallennuksella.");
-            }
-        } catch (error) {
-            console.error("Virhe ladattaessa yhteisiä tietoja netistä:", error);
-        }
-    }
-
-    // Piirretään tehtävät kalenteriruutuihin
-    function renderTasks(taskData) {
-        document.querySelectorAll('td[data-day]').forEach(td => {
-            const day = td.getAttribute('data-day');
-            
-            const oldPreview = td.querySelector('.task-preview');
-            if (oldPreview) oldPreview.remove();
-
-            if (taskData[day]) {
-                td.setAttribute('data-task', taskData[day].text);
-                td.setAttribute('data-done', taskData[day].done);
-
-                const span = document.createElement('span');
-                span.className = 'task-preview';
-                span.innerText = taskData[day].text;
-                
-                if (taskData[day].done === "true" || taskData[day].done === true) {
-                    span.style.backgroundColor = "#6c757d";
-                    span.style.textDecoration = "line-through";
-                } else {
-                    span.style.backgroundColor = "#28a745";
-                }
-                td.appendChild(span);
-            } else {
-                td.removeAttribute('data-task');
-                td.removeAttribute('data-done');
-            }
-        });
-    }
-
-    // Tallennetaan muutos ja lähetetään se nettiin muille
-    async function saveTask(day, text, done) {
-        if (text === null || text.trim() === "") {
-            delete globalTaskData[day];
-        } else {
-            globalTaskData[day] = { text: text, done: done };
-        }
-        
-        renderTasks(globalTaskData);
-        localStorage.setItem('saksanperhe_tasks', JSON.stringify(globalTaskData));
-
-        try {
-            // Käytetään POST-metodia, joka luo tai ylikirjoittaa tiedot lennosta
-            await fetch(API_URL, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ data: globalTaskData })
-            });
-        } catch (e) {
-            console.error("Nettiin tallennus epäonnistui:", e);
-        }
-    }
-
-    // Kalenteriruudun klikkaaminen
-    document.querySelectorAll('td[data-day]').forEach(td => {
-        td.addEventListener('click', function() {
-            selectedDayElement = this;
-            const day = this.getAttribute('data-day');
-            const currentTask = this.getAttribute('data-task') || "";
-            const isDone = this.getAttribute('data-done') === "true";
-
-            modalTitle.innerText = `Päivä ${day}. Heinäkuuta`;
-            
-            modalBody.innerHTML = `
-                <label>Tehtävä:</label><br>
-                <input type="text" id="taskInput" value="${currentTask}" style="width:100%; padding:5px; margin: 5px 0 15px 0; box-sizing:border-box;"><br>
-                
-                ${currentTask ? `
-                    <label>
-                        <input type="checkbox" id="doneCheckbox" ${isDone ? 'checked' : ''}> Merkitse tehdyksi
-                    </label>
-                ` : ''}
-                
-                <div style="margin-top: 20px; display:flex; justify-content:space-between;">
-                    <button class="close-btn" style="background:#28a745;" onclick="submitModalData()">Tallenna</button>
-                    <button class="close-btn" style="background:#dc3545;" onclick="closeModal()">Peruuta</button>
-                </div>
-            `;
-            
-            modal.style.display = 'flex';
-        });
-    });
-
-    function submitModalData() {
-        if (!selectedDayElement) return;
-        const day = selectedDayElement.getAttribute('data-day');
-        const text = document.getElementById('taskInput').value;
-        const doneCheckbox = document.getElementById('doneCheckbox');
-        const done = doneCheckbox ? doneCheckbox.checked : false;
-
-        saveTask(day, text, done);
-        closeModal();
-    }
-
-    function closeModal() {
-        modal.style.display = 'none';
-    }
-
-    window.onload = loadTasks;
-</script>
 </body>
 </html>

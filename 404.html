@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Saksanperhe | 404 Sivua ei löydy</title>
+    <meta name="description" content="Virhekoodi 404 - Sivua ei löydy">
+    <meta name="keywords" content="404, virhe, sivua ei löydy, Saksanperhe">
+    <meta name="footer" content="(C) Dusty 2026">
+    <meta name="robots" content="index, follow">
+
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #0f172a;
+            color: #f8fafc;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            text-align: center;
+        }
+
+        .error-code {
+            font-size: 8rem;
+            font-weight: 900;
+            margin: 0;
+            color: #38bdf8;
+            text-shadow: 0 0 20px rgba(56, 189, 248, 0.5);
+            animation: float 3s ease-in-out infinite;
+        }
+
+        h1 {
+            font-size: 2rem;
+            margin: 10px 0;
+        }
+
+        p {
+            color: #94a3b8;
+            max-width: 400px;
+            margin-bottom: 30px;
+        }
+
+        .btn {
+            background-color: #38bdf8;
+            color: #0f172a;
+            padding: 12px 24px;
+            font-weight: bold;
+            text-decoration: none;
+            border-radius: 8px;
+            transition: 0.2s;
+        }
+
+        .btn:hover {
+            background-color: #0ea5e9;
+            transform: scale(1.05);
+        }
+
+        .errorcode {
+            font-size: 0.9rem;
+            color: #94a3b8;
+            margin-top: 10px;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="error-code">404</div>
+    <h1>Hups! Eksyitkö?</h1>
+    <p>Etsimääsi sivua ei ole olemassa tai se on siirretty toiseen osoitteeseen.</p>
+    <p class="errorcode">Virhekoodi: 404</p>
+    
+    <a href="/index.html" class="btn">Palaa etusivulle</a>
+
+</body>
+</html>
